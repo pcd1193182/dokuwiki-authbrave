@@ -1,7 +1,7 @@
 <?php
 
 require('config.php');
-
+require('sso_nonce.php');
 $payload_enc=$_GET['payload'];
 $sig = $_GET['sig'];
 $hmac = hash_hmac('sha256', $payload_enc, $cfg_sso_secret, true);
@@ -19,8 +19,15 @@ if (!isset($output['nonce'])) {
 
 $nonce = $output['nonce'];
 
+try {
+    $db = new PDO($cfg_sql_url, $cfg_sql_user, $cfg_sql_pass);
+} catch (PDOException $e) {
+    require('sso_internal_error.php');
+    die('auth DB init failed');
+}
+
 // XXX should return success or load an error page and die; failure indicates replay attack or stale nonce
-$cb = check_nonce($nonce);
+$cb = check_nonce($db, $nonce);
 
 //At this point, we trust that the payload came from the sso provider, and its contents are valid.
 $email = $output['email'];
@@ -32,13 +39,6 @@ $ph = new PassHash();
 $cookie = $ph->gen_salt(32);
 if (!headers_sent()) {
     setcookie($cfg_cookie_name, $cookie, time() + $cfg_expire_session, '/', null, $cfg_cookie_https_only, true);
-}
-
-try {
-    $db = new PDO($cfg_sql_url, $cfg_sql_user, $cfg_sql_pass);
-} catch (PDOException $e) {
-    require('sso_internal_error.php');
-    die('auth DB init failed');
 }
 
 $stm = $db->prepare('SELECT username FROM user where id = :id;');
