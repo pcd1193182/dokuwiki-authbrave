@@ -7,7 +7,7 @@ use wiki$$
 CREATE TABLE `user` (
   `username` varchar(45) NOT NULL,
   `email` varchar(45) DEFAULT NULL,
-  `id` varchar(45) NOT NULL,
+  `id` bigint(20) NOT NULL,
   `authcreated` bigint(20) NOT NULL,
   `authlast` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
