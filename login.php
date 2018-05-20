@@ -11,7 +11,7 @@ function html_login($svg = false){
     require('lib/plugins/discourse-sso/config.php');
     $payload_plain = "nonce=" . gen_nonce();
     $payload = base64_encode($payload_plain);
-    $sig = hash_hmac("sha256", $payload_plain, $cfg_sso_secret, false);
+    $sig = hash_hmac("sha256", $payload, $cfg_sso_secret, false);
     // Store nonce with $ID as redirect target; maybe done in gen_nonce?
     print p_locale_xhtml('login');
     print '<div class="centeralign">'.NL;
