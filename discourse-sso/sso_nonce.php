@@ -12,7 +12,7 @@ use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
  */
 function check_nonce($db, $nonce) {
     $stm = $db->prepare('DELETE nonce FROM nonce WHERE time < :tenmin');
-    $stm->bindValue(':tenmin', strtotime("-10 minutes"));
+    $stm->bindValue(':tenmin', time() - $cfg_discourse_nonce_timeout);
     if (!$stm->execute()) {
         require('sso_internal_error.php');
         die('nonce cleanup failed');
@@ -58,7 +58,7 @@ funcion gen_nonce($cb) {
     $stm = $db->prepare('INSERT INTO nonce (nonce, cb, time) VALUES (:nonce, :cb, :now)');
     $db->bindValue(':nonce', $nonce, PDO::PARAM_STR);
     $db->bindValue(':cb', $cb, PDO::PARAM_STR);
-    $db->bindValue(':nonce', strtotime("now"), PDO::PARAM_STR);
+    $db->bindValue(':nonce', time(), PDO::PARAM_STR);
     if (!$stm->execute()) {
         require('sso_internal_error.php');
         die('nonce insertion failed');

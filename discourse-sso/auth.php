@@ -4,6 +4,7 @@
  *
  * @license MIT http://opensource.org/licenses/MIT
  * @author  kiu kiu@gmx.net
+ * @author Paul Dagnelie paulcd2000@gmail.com
  */
 
 // must be run within Dokuwiki
@@ -15,35 +16,35 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
     private $db = 0;
 
     private function getCookie() {
-	require('config.php');
-	return preg_replace("/[^A-Za-z0-9]/", '', $_COOKIE[$cfg_cookie_name]);
+        require('config.php');
+        return preg_replace("/[^A-Za-z0-9]/", '', $_COOKIE[$cfg_cookie_name]);
     }
 
     private function getUser() {
-	require('config.php');
-	$stm = $this->db->prepare('DELETE FROM session WHERE created < :time;');
-	$stm->bindValue(':time', time() - $cfg_expire_session);
-	if (!$stm->execute()) { die('cleanup session failed'); };
-
-	$stm = $this->db->prepare('SELECT charid FROM session WHERE sessionid = :sessionid;');
-	$stm->bindValue(':sessionid', $this->getCookie());
-	if (!$stm->execute()) { die('find session failed'); };
-	
-	$row = $stm->fetch();
-	if (!$row) {
-	    return false;
-	}
-
-	$stm = $this->db->prepare('SELECT * FROM user WHERE charid = :charid;');
-	$stm->bindValue(':charid', $row['charid']);
-	if (!$stm->execute()) { die('find user failed'); };
-
-	$row = $stm->fetch();
-	if (!$row) {
-	    return false;
-	}
-
-	return $row;
+        require('config.php');
+        $stm = $this->db->prepare('DELETE FROM session WHERE created < :time;');
+        $stm->bindValue(':time', time() - $cfg_expire_session);
+        if (!$stm->execute()) { die('cleanup session failed'); };
+        
+        $stm = $this->db->prepare('SELECT charid FROM session WHERE sessionid = :sessionid;');
+        $stm->bindValue(':sessionid', $this->getCookie());
+        if (!$stm->execute()) { die('find session failed'); };
+        
+        $row = $stm->fetch();
+        if (!$row) {
+            return false;
+        }
+        
+        $stm = $this->db->prepare('SELECT * FROM user WHERE charid = :charid;');
+        $stm->bindValue(':charid', $row['charid']);
+        if (!$stm->execute()) { die('find user failed'); };
+        
+        $row = $stm->fetch();
+        if (!$row) {
+            return false;
+        }
+        
+        return $row;
     }
 
     /**
@@ -51,23 +52,23 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
      */
     public function __construct() {
         parent::__construct(); // for compatibility
-
-	require('config.php');
-
-	try {
-	    $this->db = new PDO($cfg_sql_url, $cfg_sql_user, $cfg_sql_pass);
-	} catch (PDOException $e) {
-	    $this->success = false;
-	    return;
-	}
-
+        
+        require('config.php');
+        
+        try {
+            $this->db = new PDO($cfg_sql_url, $cfg_sql_user, $cfg_sql_pass);
+        } catch (PDOException $e) {
+            $this->success = false;
+            return;
+        }
+        
         $this->cando['external']    = true; // does the module do external auth checking?
         $this->cando['logout']      = true; // can the user logout again? (eg. not possible with HTTP auth)
-
-	// Even though it is possible to store and edit the mail address through this plugin
-	// it is considered a security risk as a user could subscribe to a namespace and continue to receive change notifications even though his core account has been revoked.
+        
+        // Even though it is possible to store and edit the mail address through this plugin
+        // it is considered a security risk as a user could subscribe to a namespace and continue to receive change notifications even though his core account has been revoked.
         $this->cando['modMail']     = false; // can emails be changed?
-
+        
         $this->cando['addUser']     = false; // can Users be created?
         $this->cando['delUser']     = false; // can Users be deleted?
         $this->cando['modLogin']    = false; // can login names be changed?
@@ -77,17 +78,17 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
         $this->cando['getUsers']    = false; // can a (filtered) list of users be retrieved?
         $this->cando['getUserCount']= false; // can the number of users be retrieved?
         $this->cando['getGroups']   = false; // can a list of available groups be retrieved?
-
+        
         $this->success = true;
     }
-
-
+    
+    
     public function logOff() {
-	$stm = $this->db->prepare('DELETE FROM session WHERE sessionid = :sessionid;');
-	$stm->bindValue(':sessionid', $this->getCookie());
-	if (!$stm->execute()) { die('logoff failed'); };
+        $stm = $this->db->prepare('DELETE FROM session WHERE sessionid = :sessionid;');
+        $stm->bindValue(':sessionid', $this->getCookie());
+        if (!$stm->execute()) { die('logoff failed'); };
     }
-
+    
     /**
      * Do all authentication [ OPTIONAL ]
      *
@@ -100,23 +101,23 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
         global $USERINFO;
         global $conf;
         $sticky ? $sticky = true : $sticky = false; //sanity check
-
-	$row = $this->getUser();
-	if (!$row) {
-	    return false;
-	}
-
+        
+        $row = $this->getUser();
+        if (!$row) {
+            return false;
+        }
+        
         // set the globals if authed
         $USERINFO['name'] = $row['charname'];
         $USERINFO['mail'] = $row['mail'];
         $USERINFO['grps'] = explode(',', $row['groups']);
         $_SERVER['REMOTE_USER'] = $row['username'];
         $_SESSION[DOKU_COOKIE]['auth']['user'] = $row['username'];
-//        $_SESSION[DOKU_COOKIE]['auth']['pass'] = $pass;
+        //        $_SESSION[DOKU_COOKIE]['auth']['pass'] = $pass;
         $_SESSION[DOKU_COOKIE]['auth']['info'] = $USERINFO;
         return true;
     }
-
+    
     /**
      * Return user info
      *
@@ -131,16 +132,16 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
      * @return  array containing user data or false
      */
     public function getUserData($user) {
-	$stm = $this->db->prepare('SELECT * FROM user WHERE username = :username;');
-	$stm->bindValue(':username', $user);
-	if (!$stm->execute()) { die('user search failed'); };
-
-	$row = $stm->fetch();
-	if (!$row) {
-	    return false;
-	}
-
-	return array('name' => $row['charname'], 'email' => $row['mail'], 'grps' => explode(',', $row['grp']));
+        $stm = $this->db->prepare('SELECT * FROM user WHERE username = :username;');
+        $stm->bindValue(':username', $user);
+        if (!$stm->execute()) { die('user search failed'); };
+        
+        $row = $stm->fetch();
+        if (!$row) {
+            return false;
+        }
+        
+        return array('name' => $row['charname'], 'email' => $row['mail'], 'grps' => explode(',', $row['grp']));
     }
 
     /**
@@ -153,14 +154,14 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
      * @return  bool
      */
     public function modifyUser($user, $changes) {
-	// $stm = $this->db->prepare('UPDATE user SET mail = :mail WHERE username = :username;');
-	// $stm->bindValue(':username', $user);
-	// $stm->bindValue(':mail', $changes['mail']);
-	// if (!$stm->execute()) { die('user modification failed'); };
-	// return true;
-	return false;
+        // $stm = $this->db->prepare('UPDATE user SET mail = :mail WHERE username = :username;');
+        // $stm->bindValue(':username', $user);
+        // $stm->bindValue(':mail', $changes['mail']);
+        // if (!$stm->execute()) { die('user modification failed'); };
+        // return true;
+        return false;
     }
-
+    
     /**
      * Return case sensitivity of the backend
      *
@@ -172,7 +173,7 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
     public function isCaseSensitive() {
         return true;
     }
-
+    
     /**
      * Sanitize a given username
      *
@@ -186,7 +187,7 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
      * @return string the cleaned username
      */
     public function cleanUser($user) {
-	return preg_replace("/[^A-Za-z0-9]/", '_', $user);
+        return preg_replace("/[^A-Za-z0-9]/", '_', $user);
     }
 
     /**
@@ -204,7 +205,7 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
      * @return string the cleaned groupname
      */
     public function cleanGroup($group) {
-	return preg_replace("/[^A-Za-z0-9]/", '_', $group);
+        return preg_replace("/[^A-Za-z0-9]/", '_', $group);
     }
 
     /**
@@ -232,7 +233,7 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
      * @return bool
      */
     public function useSessionCache($user) {
-	return false;
+        return false;
     }
 }
 

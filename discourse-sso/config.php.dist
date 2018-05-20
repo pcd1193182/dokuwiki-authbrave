@@ -19,5 +19,6 @@ $cfg_cookie_name = 'discourse-sso';
 $cfg_cookie_https_only = true;
 
 $cfg_expire_session = (60 * 60 * 24 * 1);
+$cfg_discourse_nonce_timeout = (60 * 10);
 
 ?>
