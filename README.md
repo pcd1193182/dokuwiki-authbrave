@@ -1,4 +1,6 @@
-dokuwiki-authbrave
+dokuwiki-discourse-sso
 ==================
 
-Authentication plugin for using BRAVE Collective core servies with dokuwiki
+Authentication plugin that teaches dokuwiki the discourse SSO flow for easier integration into existing SSO services.
+
+This code is heavily based on the https://github.com/bravecollective/dokuwiki-authbrave plugin.

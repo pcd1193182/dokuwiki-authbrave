@@ -14,11 +14,10 @@
 5. Dokuwiki changes
 
 	$dokuwiki/inc/html.php : html_login()
-		require('lib/plugins/authbrave/config.php');
-		print '<a href="' . $cfg_url_auth_init . '?cb=' . $ID . '">auth</a>';
+		Replace with version in login.php
 
 	$dokuwiki/conf/local.php
-    $conf['authtype'] = 'authbrave';
+		$conf['authtype'] = 'discourse-sso';
 		$conf['disableactions'] = 'register,resendpwd,profile,profile_delete,rss,subscribe,unsubscribe';
 		$conf['signature'] = ' --- //[[user:@USER@|@NAME@]] @DATE@//';
 		$conf['showuseras'] = 'username_link';
