@@ -6,45 +6,29 @@ use wiki$$
 
 CREATE TABLE `user` (
   `username` varchar(45) NOT NULL,
-  `mail` varchar(45) DEFAULT NULL,
-  `groups` varchar(45) DEFAULT NULL,
-  `charid` bigint(20) NOT NULL,
-  `charname` varchar(45) NOT NULL,
-  `corpid` bigint(20) NOT NULL,
-  `corpname` varchar(45) NOT NULL,
-  `allianceid` bigint(20) DEFAULT NULL,
-  `alliancename` varchar(45) DEFAULT NULL,
-  `authtoken` varchar(45) NOT NULL,
+  `email` varchar(45) DEFAULT NULL,
+  `id` varchar(45) NOT NULL,
   `authcreated` bigint(20) NOT NULL,
   `authlast` bigint(20) NOT NULL,
-  PRIMARY KEY (`charid`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`),
-  UNIQUE KEY `charid_UNIQUE` (`charid`),
-  UNIQUE KEY `charname_UNIQUE` (`charname`),
   UNIQUE KEY `authtoken_UNIQUE` (`authtoken`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 CREATE TABLE `session` (
   `sessionid` varchar(45) NOT NULL,
-  `charid` bigint(20) NOT NULL,
+  `id` bigint(20) NOT NULL,
   `created` bigint(20) NOT NULL,
   PRIMARY KEY (`sessionid`),
   UNIQUE KEY `sessionid_UNIQUE` (`sessionid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
-CREATE TABLE `grp` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `grp` varchar(45) NOT NULL,
-  `criteria` varchar(45) NOT NULL,
-  `comment` varchar(45) DEFAULT NULL,	
-  PRIMARY KEY (`id`)
+CREATE TABLE `nonce` (
+  `nonce` varchar(20) NOT NULL,
+  `cb` varchar(45) NOT NULL,
+  `time` bigint(20) NOT NULL,
+  PRIMARY KEY (`nonce`),
+  UNIQUE KEY `nonce_UNIQUE` (`nonce`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
-CREATE TABLE `ban` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `criteria` varchar(45) NOT NULL,
-  `comment` varchar(45) DEFAULT NULL,	
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
-
-INSERT INTO `grp` (`grp`, `criteria`) VALUES ('admin', 'tag_wiki.admin');$$

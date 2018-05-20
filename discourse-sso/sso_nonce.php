@@ -11,14 +11,14 @@ use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
  * retrieves the stored redirect URL and return it.
  */
 function check_nonce($db, $nonce) {
-    $stm = $db->prepare('DELETE nonce FROM nonces WHERE time < :tenmin');
+    $stm = $db->prepare('DELETE nonce FROM nonce WHERE time < :tenmin');
     $stm->bindValue(':tenmin', strtotime("-10 minutes"));
     if (!$stm->execute()) {
         require('sso_internal_error.php');
         die('nonce cleanup failed');
     }
 
-    $stm = $db->prepare('SELECT cb FROM nonces WHERE nonce = :nonce');
+    $stm = $db->prepare('SELECT cb FROM nonce WHERE nonce = :nonce');
     $stm->bindValue(':nonce', $nonce);
     if (!$stm->execute()) {
         require('sso_internal_error.php');
@@ -26,7 +26,7 @@ function check_nonce($db, $nonce) {
     }
     $cb = $stm->fetch();
 
-    $stm = $db->prepare('DELETE FROM nonces WHERE nonce = :nonce');
+    $stm = $db->prepare('DELETE FROM nonce WHERE nonce = :nonce');
     $stm->bindValue(':nonce', $nonce);
     if (!$stm->execute()) {
         require('sso_internal_error.php');
@@ -55,7 +55,7 @@ funcion gen_nonce($cb) {
         die('nonce generation failed');
     }
     $nonce = uniqid('', true);
-    $stm = $db->prepare('INSERT INTO nonces (nonce, cb, time) VALUES (:nonce, :cb, :now)');
+    $stm = $db->prepare('INSERT INTO nonce (nonce, cb, time) VALUES (:nonce, :cb, :now)');
     $db->bindValue(':nonce', $nonce, PDO::PARAM_STR);
     $db->bindValue(':cb', $cb, PDO::PARAM_STR);
     $db->bindValue(':nonce', strtotime("now"), PDO::PARAM_STR);
