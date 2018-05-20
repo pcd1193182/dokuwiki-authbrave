@@ -11,5 +11,6 @@
 	],
 	"require": {
 		"bravecollective/php-api": "dev-master"
+		"ramsey/uuid": "^3.7"
 	}
 }
