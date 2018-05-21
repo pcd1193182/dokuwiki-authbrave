@@ -26,7 +26,7 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
         $stm->bindValue(':time', time() - $cfg_expire_session);
         if (!$stm->execute()) { die('cleanup session failed'); };
         
-        $stm = $this->db->prepare('SELECT charid FROM session WHERE sessionid = :sessionid;');
+        $stm = $this->db->prepare('SELECT id FROM session WHERE sessionid = :sessionid;');
         $stm->bindValue(':sessionid', $this->getCookie());
         if (!$stm->execute()) { die('find session failed'); };
         
@@ -35,8 +35,8 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
             return false;
         }
         
-        $stm = $this->db->prepare('SELECT * FROM user WHERE charid = :charid;');
-        $stm->bindValue(':charid', $row['charid']);
+        $stm = $this->db->prepare('SELECT * FROM user WHERE id = :id;');
+        $stm->bindValue(':id', $row['id']);
         if (!$stm->execute()) { die('find user failed'); };
         
         $row = $stm->fetch();
@@ -108,9 +108,9 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
         }
         
         // set the globals if authed
-        $USERINFO['name'] = $row['charname'];
+        $USERINFO['name'] = $row['username'];
         $USERINFO['mail'] = $row['mail'];
-        $USERINFO['grps'] = explode(',', $row['groups']);
+        // $USERINFO['grps'] = explode(',', $row['groups']);
         $_SERVER['REMOTE_USER'] = $row['username'];
         $_SESSION[DOKU_COOKIE]['auth']['user'] = $row['username'];
         //        $_SESSION[DOKU_COOKIE]['auth']['pass'] = $pass;
@@ -141,7 +141,7 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
             return false;
         }
         
-        return array('name' => $row['charname'], 'email' => $row['mail'], 'grps' => explode(',', $row['grp']));
+        return array('name' => $row['username'], 'email' => $row['mail'], 'grps' => explode(',', $row['grp']));
     }
 
     /**

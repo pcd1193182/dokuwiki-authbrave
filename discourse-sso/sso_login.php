@@ -26,7 +26,6 @@ try {
     die('auth DB init failed');
 }
 
-// XXX should return success or load an error page and die; failure indicates replay attack or stale nonce
 $cb = check_nonce($db, $nonce);
 
 //At this point, we trust that the payload came from the sso provider, and its contents are valid.
