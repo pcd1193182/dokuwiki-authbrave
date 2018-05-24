@@ -15,6 +15,10 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
 
     private $db = 0;
 
+    private $groupMap = array();
+
+    private $mapTime = 0;
+
     private function getCookie() {
         require('config.php');
         return preg_replace("/[^A-Za-z0-9]/", '', $_COOKIE[$cfg_cookie_name]);
@@ -45,6 +49,22 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
         }
         
         return $row;
+    }
+
+    private function getGroups($user) {
+        $atime = fileatime($cfg_grp_file);
+        if ($atime == $mapTime)
+            return groupMap[$user];
+
+        $txt_file = file_get_contents($cfg_grp_file);
+        $rows = explode("\n", $txt_file);
+        foreach($rows as $row) {
+            $row_data = explode(',', $row);
+            if (count($row_data) == 0)
+                continue;
+            $group_map[$row_data[0]] = array_slice($row_data, 1);
+        }
+        return groupMap[$user];
     }
 
     /**
@@ -110,7 +130,7 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
         // set the globals if authed
         $USERINFO['name'] = $row['username'];
         $USERINFO['mail'] = $row['mail'];
-        // $USERINFO['grps'] = explode(',', $row['groups']);
+        $USERINFO['grps'] = getGroups($row['username']);
         $_SERVER['REMOTE_USER'] = $row['username'];
         $_SESSION[DOKU_COOKIE]['auth']['user'] = $row['username'];
         //        $_SESSION[DOKU_COOKIE]['auth']['pass'] = $pass;
@@ -141,7 +161,7 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
             return false;
         }
         
-        return array('name' => $row['username'], 'email' => $row['mail'], 'grps' => explode(',', $row['grp']));
+        return array('name' => $row['username'], 'email' => $row['mail'], 'grps' => $user);
     }
 
     /**
