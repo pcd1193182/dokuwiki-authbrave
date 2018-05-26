@@ -55,6 +55,7 @@ class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
         $atime = fileatime($cfg_grp_file);
         if ($atime == $mapTime)
             return groupMap[$user];
+        $mapTime = $atime;
 
         $txt_file = file_get_contents($cfg_grp_file);
         $rows = explode("\n", $txt_file);
