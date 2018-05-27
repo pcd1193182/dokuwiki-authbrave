@@ -1,4 +1,4 @@
-base   discourse-sso
+base   discoursesso
 author pcd1193182
 email  paulcd2000@gmail.com
 date   2084-05-20

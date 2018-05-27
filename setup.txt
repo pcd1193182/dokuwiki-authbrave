@@ -1,4 +1,4 @@
-1. Move authbrave folder to $dokuwiki/lib/plugins/
+1. Move discoursesso folder to $dokuwiki/lib/plugins/
 
 2. Copy and edit config.php.dist to config.php
 
@@ -17,7 +17,7 @@
 		Replace with version in login.php
 
 	$dokuwiki/conf/local.php
-		$conf['authtype'] = 'discourse-sso';
+		$conf['authtype'] = 'discoursesso';
 		$conf['disableactions'] = 'register,resendpwd,profile,profile_delete,rss,subscribe,unsubscribe';
 		$conf['signature'] = ' --- //[[user:@USER@|@NAME@]] @DATE@//';
 		$conf['showuseras'] = 'username_link';

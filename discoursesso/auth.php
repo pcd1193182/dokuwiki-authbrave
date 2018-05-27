@@ -1,6 +1,6 @@
 <?php
 /**
- * DokuWiki Plugin authbrave (Auth Component)
+ * DokuWiki Plugin discourse-sso (Auth Component)
  *
  * @license MIT http://opensource.org/licenses/MIT
  * @author  kiu kiu@gmx.net
@@ -11,7 +11,7 @@
 if(!defined('DOKU_INC')) die();
 
 
-class auth_plugin_authbrave extends DokuWiki_Auth_Plugin {
+class auth_plugin_discoursesso extends DokuWiki_Auth_Plugin {
 
     private $db = 0;
 

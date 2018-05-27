@@ -1,9 +1,7 @@
 <?php
 
-require('config.php');
 require('vendor/autoload.php');
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
+
 /*
  * The first thing this function does is clean up all nonces older
  * than ten minutes, for security. Then, it checks that the nonce is
@@ -40,28 +38,29 @@ function check_nonce($db, $nonce) {
  * along with the time it was generated and the url to redirect the
  * user to when authentication is completed.
  */
-funcion gen_nonce($cb) {
+function gen_nonce($cb) {
+    require('config.php');
     try {
         $db = new PDO($cfg_sql_url, $cfg_sql_user, $cfg_sql_pass);
     } catch (PDOException $e) {
         require('sso_internal_error.php');
-        die('auth DB init failed');
+        die('auth DB init failed ' . $e->getMessage());
     }
 
     try {
-        $nonce = Uuid::uuid4()->toString();
-    } catch (UnsatisfiedDependencyException $e) {
+        $nonce = Ramsey\Uuid\Uuid::uuid4()->toString();
+    } catch (Ramsey\Uuid\Exception\UnsatisfiedDependencyException $e) {
         require('sso_internal_error.php');
         die('nonce generation failed');
     }
-    $nonce = uniqid('', true);
     $stm = $db->prepare('INSERT INTO nonce (nonce, cb, time) VALUES (:nonce, :cb, :now)');
-    $db->bindValue(':nonce', $nonce, PDO::PARAM_STR);
-    $db->bindValue(':cb', $cb, PDO::PARAM_STR);
-    $db->bindValue(':nonce', time(), PDO::PARAM_STR);
+    $stm->bindValue(':nonce', $nonce, PDO::PARAM_STR);
+    $stm->bindValue(':cb', $cb, PDO::PARAM_STR);
+    $stm->bindValue(':now', time(), PDO::PARAM_STR);
     if (!$stm->execute()) {
         require('sso_internal_error.php');
         die('nonce insertion failed');
     }
+    return $nonce;
 }
 
