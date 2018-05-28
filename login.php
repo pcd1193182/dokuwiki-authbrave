@@ -15,6 +15,6 @@ function html_login($svg = false){
     $sig = hash_hmac("sha256", $payload, $cfg_sso_secret, false);
     print p_locale_xhtml('login');
     print '<div class="centeralign">'.NL;
-    print '<a href="' . $cfg_sso_url . '/sso?sso=' . $payload . '&sig=' . $sig . '">Log In with SSO</a>';
+    print '<a href="' . $cfg_sso_url . '?sso=' . $payload . '&sig=' . $sig . '">Log In with SSO</a>';
     print '</div>'.NL;
 }
