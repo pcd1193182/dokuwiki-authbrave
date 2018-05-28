@@ -6,6 +6,7 @@
 	$ curl -sS https://getcomposer.org/installer | php
 	$ mv composer.phar /usr/local/bin/composer
 	$ composer install
+	Install php-mysql driver
 
 4. Setup database
 	$ mysql -u myuser -p < schema.sql
