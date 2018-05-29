@@ -7,6 +7,8 @@
 	$ mv composer.phar /usr/local/bin/composer
 	$ composer install
 	Install php-mysql driver
+3b. Add dependencies to wiki composer
+    	$ composer require ramsey/uuid=3.7
 
 4. Setup database
 	$ mysql -u myuser -p < schema.sql

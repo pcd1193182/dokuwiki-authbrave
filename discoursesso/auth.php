@@ -52,20 +52,22 @@ class auth_plugin_discoursesso extends DokuWiki_Auth_Plugin {
     }
 
     private function getGroups($user) {
-        $atime = fileatime($cfg_grp_file);
-        if ($atime == $mapTime)
-            return groupMap[$user];
-        $mapTime = $atime;
+        require('config.php');
+        $mtime = filemtime($cfg_grp_file);
+        if ($mtime == $this->mapTime)
+            return $this->groupMap[$user];
+        $this->mapTime = $mtime;
 
         $txt_file = file_get_contents($cfg_grp_file);
         $rows = explode("\n", $txt_file);
         foreach($rows as $row) {
+            $row = trim($row);
             $row_data = explode(',', $row);
             if (count($row_data) == 0)
                 continue;
-            $group_map[$row_data[0]] = array_slice($row_data, 1);
+            $this->groupMap[$row_data[0]] = array_slice($row_data, 1);
         }
-        return groupMap[$user];
+        return $this->groupMap[$user];
     }
 
     /**
@@ -150,9 +152,10 @@ class auth_plugin_discoursesso extends DokuWiki_Auth_Plugin {
      * grps array   list of groups the user is in
      *
      * @param   string $user the user name
+     * @param   bool $requireGroups ignored
      * @return  array containing user data or false
      */
-    public function getUserData($user) {
+    public function getUserData($user, $requireGroups=true) {
         $stm = $this->db->prepare('SELECT * FROM user WHERE username = :username;');
         $stm->bindValue(':username', $user);
         if (!$stm->execute()) { die('user search failed'); };

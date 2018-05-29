@@ -2,15 +2,15 @@
 
 require('config.php');
 require('sso_nonce.php');
-$payload_enc=$_GET['payload'];
+$payload_enc=$_GET['sso'];
 $sig = $_GET['sig'];
-$hmac = hash_hmac('sha256', $payload_enc, $cfg_sso_secret, true);
+$hmac = hash_hmac('sha256', $payload_enc, $cfg_sso_secret, false);
 if ($hmac != $sig) {
     require('sso_inval.php');
     die ('non-matching sig');
 }
 
-$payload_plain = base64_decode($payload_end);
+$payload_plain = base64_decode($payload_enc);
 parse_str($payload_plain, $output);
 if (!isset($output['nonce'])) {
     require('sso_inval.php');
@@ -68,9 +68,9 @@ if (!$stm->execute()) {
     die('session cleanup failed');
 }
 
-$stm = $db->prepare('INSERT INTO session (sessionid, charid, created) VALUES (:sessionid, :charid, :created)');
+$stm = $db->prepare('INSERT INTO session (sessionid, id, created) VALUES (:sessionid, :id, :created)');
 $stm->bindValue(':sessionid', $cookie);
-$stm->bindValue(':charid', $charid);
+$stm->bindValue(':id', $external_id);
 $stm->bindValue(':created', time());
 if (!$stm->execute()) {
     require('sso_internal_error.php');
