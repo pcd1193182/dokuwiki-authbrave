@@ -23,6 +23,10 @@ function check_nonce($db, $nonce) {
         die('cb fetch failed');
     }
     $cb = $stm->fetch();
+    if (!$cb) {
+        require('sso_internal_error.php');
+        die('cb fetch failed');
+    }
 
     $stm = $db->prepare('DELETE FROM nonce WHERE nonce = :nonce');
     $stm->bindValue(':nonce', $nonce);
