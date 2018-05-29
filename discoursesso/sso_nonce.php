@@ -34,7 +34,7 @@ function check_nonce($db, $nonce) {
         require('sso_internal_error.php');
         die('nonce removal failed');
     }
-    return $cb;
+    return $cb['cb'];
 }
 
 /*
