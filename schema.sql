@@ -24,7 +24,7 @@ CREATE TABLE `session` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 CREATE TABLE `nonce` (
-  `nonce` varchar(20) NOT NULL,
+  `nonce` varchar(45) NOT NULL,
   `cb` varchar(45) NOT NULL,
   `time` bigint(20) NOT NULL,
   PRIMARY KEY (`nonce`),
